@@ -1,0 +1,23 @@
+const { Builder, By, Key, until } = require('selenium-webdriver');
+const assert = require('assert');
+
+(async function example() {
+  let driver = await new Builder().forBrowser('chrome').build();
+  try {
+    // Open https://www.lambdatest.com/selenium-playground
+    await driver.get('https://www.lambdatest.com/selenium-playground');
+
+    // Click “Drag & Drop Sliders” under “Progress Bars & Sliders”
+    await driver.findElement(By.xpath("//a[text()='Drag & Drop Sliders']")).click();
+
+    // Select the slider “Default value 15” and drag the bar to make it 95
+    let slider = await driver.findElement(By.xpath("//input[@value='15']/.."));
+    await driver.actions().dragAndDropBy(slider, 80, 0).perform();
+
+    // Validate whether the range value shows 95
+    let range = await driver.findElement(By.xpath("//input[@value='95']"));
+    assert.equal(await range.getAttribute('value'), '95');
+  } finally {
+    await driver.quit();
+  }
+})();
