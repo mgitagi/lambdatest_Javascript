@@ -1,0 +1,43 @@
+const { Builder, By, Key, until } = require('selenium-webdriver');
+const assert = require('assert');
+
+(async function example() {
+  let driver = await new Builder().forBrowser('chrome').build();
+  try {
+    // Open https://www.lambdatest.com/selenium-playground
+    await driver.get('https://www.lambdatest.com/selenium-playground');
+
+    // Click “Input Form Submit” under “Input Forms”
+    await driver.findElement(By.xpath("//a[text()='Input Form Submit']")).click();
+
+    // Click “Submit” without filling in any information in the form
+    await driver.findElement(By.xpath("//button[text()='Submit']")).click();
+
+    // Assert “Please fill in the fields” error message
+    let error = await driver.findElement(By.xpath("//div[text()='Please fill in the fields']"));
+    assert.equal(await error.getText(), 'Please fill in the fields');
+
+    // Fill in Name, Email, and other fields
+    await driver.findElement(By.name('first_name')).sendKeys('John');
+    await driver.findElement(By.name('last_name')).sendKeys('Doe');
+    await driver.findElement(By.name('email')).sendKeys('john.doe@example.com');
+    await driver.findElement(By.name('phone')).sendKeys('555-555-5555');
+
+    // From the Country drop-down, select “United States” using the text property
+    let country = await driver.findElement(By.name('country'));
+    await country.click();
+    await driver.findElement(By.xpath("//option[text()='United States']")).click();
+
+    // Fill all fields and click “Submit”
+    await driver.findElement(By.name('city')).sendKeys('New York');
+    await driver.findElement(By.name('zip')).sendKeys('10001');
+    await driver.findElement(By.name('website')).sendKeys('https://www.example.com');
+    await driver.findElement(By.xpath("//button[text()='Submit']")).click();
+
+    // Once submitted, validate the success message “Thanks for contacting us, we will get back to you shortly.” on the screen
+    let success = await driver.findElement(By.xpath("//div[text()='Thanks for contacting us, we will get back to you shortly.']"));
+    assert.equal(await success.getText(), 'Thanks for contacting us, we will get back to you shortly.');
+  } finally {
+    await driver.quit();
+  }
+})();
