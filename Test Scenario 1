@@ -1,0 +1,32 @@
+const { Builder, By, Key, until } = require('selenium-webdriver');
+const assert = require('assert');
+
+(async function example() {
+  let driver = await new Builder().forBrowser('chrome').build();
+  try {
+    // Open LambdaTest’s Selenium Playground
+    await driver.get('https://www.lambdatest.com/selenium-playground');
+
+    // Click “Simple Form Demo” under Input Forms
+    await driver.findElement(By.xpath("//a[text()='Simple Form Demo']")).click();
+
+    // Validate that the URL contains “simple-form-demo”
+    await driver.wait(until.urlContains('simple-form-demo'), 1000);
+    assert.ok(await driver.getCurrentUrl().includes('simple-form-demo'));
+
+    // Create a variable for a string value E.g: “Welcome to LambdaTest”
+    let message = 'Welcome to LambdaTest';
+
+    // Use this variable to enter values in the “Enter Message” text box
+    await driver.findElement(By.id('user-message')).sendKeys(message);
+
+    // Click “Get Checked Value”
+    await driver.findElement(By.css('#get-input > .btn')).click();
+
+    // Validate whether the same text message is displayed in the right-hand panel under the “Your Message:” section
+    let result = await driver.findElement(By.id('display')).getText();
+    assert.equal(result, `Your Message: ${message}`);
+  } finally {
+    await driver.quit();
+  }
+})();
